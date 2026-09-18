@@ -12,6 +12,8 @@ from torchvision import datasets, transforms
 
 from model import HandwritingCNN
 
+sys.stdout.reconfigure(encoding="utf-8")
+
 
 def evaluate(model, loader, device):
     model.eval()
