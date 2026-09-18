@@ -39,9 +39,10 @@ def main():
 
     model = HandwritingCNN().to(device)
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.3)
     criterion = nn.CrossEntropyLoss()
 
-    epochs = 5
+    epochs = 20
     for epoch in range(epochs):
         model.train()
         for images, labels in train_loader:
@@ -50,6 +51,7 @@ def main():
             loss = criterion(model(images), labels)
             loss.backward()
             optimizer.step()
+        scheduler.step()
         acc = evaluate(model, test_loader, device)
         print(f"epoch {epoch + 1}/{epochs} test accuracy: {acc:.4f}")
 
