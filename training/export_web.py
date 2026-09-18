@@ -35,4 +35,8 @@ def export_weights(checkpoint_path, output_path):
 
 
 if __name__ == "__main__":
-    export_weights("checkpoints/model.pth", "../web_version/model/weights.json")
+    _here = os.path.dirname(os.path.abspath(__file__))
+    export_weights(
+        os.path.join(_here, "checkpoints", "model.pth"),
+        os.path.join(_here, "..", "web_version", "model", "weights.json"),
+    )
