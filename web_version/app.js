@@ -54,7 +54,7 @@ canvas.addEventListener("touchend", endDraw);
 document.getElementById("clear").addEventListener("click", () => {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  resultEl.textContent = "숫자를 그려주세요";
+  resultEl.textContent = "숫자를 그려 주세요";
 });
 
 function canvasToInputArray() {
@@ -93,7 +93,7 @@ document.getElementById("recognize").addEventListener("click", async () => {
     }
   }
   if (!hasDrawing) {
-    resultEl.textContent = "그림을 먼저 그려주세요";
+    resultEl.textContent = "그림을 먼저 그려 주세요";
     return;
   }
 
@@ -103,4 +103,6 @@ document.getElementById("recognize").addEventListener("click", async () => {
   resultEl.textContent = `예측: ${predicted} (${confidence}%)`;
 });
 
-loadWeights();
+loadWeights().catch(() => {
+  resultEl.textContent = "모델을 불러오지 못했습니다. 새로고침해 주세요.";
+});

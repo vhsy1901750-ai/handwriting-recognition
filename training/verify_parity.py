@@ -65,6 +65,7 @@ def main():
         print("PASS: PyTorch와 web_version/inference.js 예측이 모두 일치합니다.")
     else:
         print("FAIL: PyTorch와 JS 추론 결과가 다릅니다.")
+    sys.exit(0 if matches == total else 1)
 
 
 if __name__ == "__main__":
