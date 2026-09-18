@@ -2,9 +2,10 @@
 function conv2d(input, inShape, weight, weightShape, bias) {
   const [inC, inH, inW] = inShape;
   const [outC, wInC, kH, kW] = weightShape;
-  const pad = 1;
-  const outH = inH;
-  const outW = inW;
+  const padH = (kH - 1) >> 1;
+  const padW = (kW - 1) >> 1;
+  const outH = inH + 2 * padH - kH + 1;
+  const outW = inW + 2 * padW - kW + 1;
   const output = new Float32Array(outC * outH * outW);
 
   for (let oc = 0; oc < outC; oc++) {
@@ -13,10 +14,10 @@ function conv2d(input, inShape, weight, weightShape, bias) {
         let sum = bias[oc];
         for (let ic = 0; ic < inC; ic++) {
           for (let ky = 0; ky < kH; ky++) {
-            const iy = oy + ky - pad;
+            const iy = oy + ky - padH;
             if (iy < 0 || iy >= inH) continue;
             for (let kx = 0; kx < kW; kx++) {
-              const ix = ox + kx - pad;
+              const ix = ox + kx - padW;
               if (ix < 0 || ix >= inW) continue;
               const inIdx = ic * inH * inW + iy * inW + ix;
               const wIdx = ((oc * wInC + ic) * kH + ky) * kW + kx;
