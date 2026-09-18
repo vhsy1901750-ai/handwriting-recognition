@@ -1,6 +1,8 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { conv2d, relu, maxPool2d, linear, softmax } = require("../inference.js");
+const fs = require("node:fs");
+const path = require("node:path");
+const { conv2d, relu, maxPool2d, linear, softmax, runInference } = require("../inference.js");
 
 test("conv2d with identity kernel returns input unchanged", () => {
   const input = new Float32Array([1, 2, 3, 4, 5, 6, 7, 8, 9]); // 1x3x3
@@ -43,4 +45,17 @@ test("softmax outputs a probability distribution", () => {
   const sum = Array.from(probs).reduce((a, b) => a + b, 0);
   assert.ok(Math.abs(sum - 1) < 1e-6);
   assert.ok(probs[2] > probs[1] && probs[1] > probs[0]);
+});
+
+test("runInference produces a valid probability distribution for a blank image", () => {
+  const weightsPath = path.join(__dirname, "../model/weights.json");
+  const weights = JSON.parse(fs.readFileSync(weightsPath, "utf8"));
+  const blankImage = new Float32Array(28 * 28); // 전부 0 (빈 캔버스)
+
+  const { predicted, probabilities } = runInference(weights, blankImage);
+
+  assert.ok(Number.isInteger(predicted) && predicted >= 0 && predicted <= 9);
+  assert.equal(probabilities.length, 10);
+  const sum = probabilities.reduce((a, b) => a + b, 0);
+  assert.ok(Math.abs(sum - 1) < 1e-4);
 });

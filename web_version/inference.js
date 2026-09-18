@@ -82,6 +82,45 @@ function softmax(logits) {
   return Float32Array.from(exps, (v) => v / sum);
 }
 
+function runInference(weights, image) {
+  let x = { data: image, shape: [1, 28, 28] };
+
+  x = conv2d(
+    x.data,
+    x.shape,
+    new Float32Array(weights.conv1.weight),
+    weights.conv1.weight_shape,
+    new Float32Array(weights.conv1.bias)
+  );
+  x.data = relu(x.data);
+  x = maxPool2d(x.data, x.shape, 2);
+
+  x = conv2d(
+    x.data,
+    x.shape,
+    new Float32Array(weights.conv2.weight),
+    weights.conv2.weight_shape,
+    new Float32Array(weights.conv2.bias)
+  );
+  x.data = relu(x.data);
+  x = maxPool2d(x.data, x.shape, 2);
+
+  const logits = linear(
+    x.data,
+    new Float32Array(weights.fc.weight),
+    weights.fc.weight_shape,
+    new Float32Array(weights.fc.bias)
+  );
+  const probabilities = softmax(logits);
+
+  let predicted = 0;
+  for (let i = 1; i < probabilities.length; i++) {
+    if (probabilities[i] > probabilities[predicted]) predicted = i;
+  }
+
+  return { predicted, probabilities: Array.from(probabilities) };
+}
+
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { conv2d, relu, maxPool2d, linear, softmax };
+  module.exports = { conv2d, relu, maxPool2d, linear, softmax, runInference };
 }
